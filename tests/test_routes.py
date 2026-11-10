@@ -38,6 +38,7 @@ class TestAccountService(TestCase):
     @classmethod
     def tearDownClass(cls):
         """Runs once before test suite"""
+        pass
 
     def setUp(self):
         """Runs before each test"""
@@ -148,25 +149,22 @@ class TestAccountService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 5)
-        # send a self.client.get() request to the BASE_URL
-        # assert that the resp.status_code is status.HTTP_200_OK
-        # get the data from resp.get_json()
-        # assert that the len() of the data is 5 (the number of accounts you created)
     
     def test_update_account(self):
         """It should Update an existing Account"""
-        # create an Account to update
+        account = self._create_accounts(1)[0]
 
-        test_account = AccountFactory()
-        resp = self.client.post(
-            BASE_URL,
-            json=test_account.serialize()
-        )
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        new_account = resp.get_json()
+        new_account = account.serialize()
         new_account["name"] = "Something Known"
-        resp = self.client.put(f"{BASE_URL}/{new_account['id']}", json=new_account)
-        updated_account = resp.get_json
+
+        resp = self.client.put(
+            f"{BASE_URL}/{account.id}",
+            json=new_account
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        updated_account = resp.get_json()
         self.assertEqual(updated_account["name"], "Something Known")
 
     def test_delete_account(self):
