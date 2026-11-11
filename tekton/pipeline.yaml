@@ -16,19 +16,6 @@ spec:
     - name: branch
       default: main
     - name: build-image
-    - name: build
-      workspaces:
-        - name: source
-          workspace: pipeline-workspace
-      taskRef:
-        name: buildah
-        kind: ClusterTask
-      params:
-      - name: IMAGE
-        value: "$(params.build-image)"
-      runAfter:
-        - tests
-        - lint
   tasks:
     - name: init
       workspaces:
@@ -72,11 +59,24 @@ spec:
       taskRef:
         name: nose
       params:
-      - name: database_uri
-      value: "sqlite:///test.db"
-    - name: args
-      value: "-v --with-spec --spec-color"
+        - name: database_uri
+          value: "sqlite:///test.db"
+        - name: args
+          value: "-v --with-spec --spec-color"
       runAfter:
         - clone
 
 
+    - name: build
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+      - name: IMAGE
+        value: "$(params.build-image)"
+      runAfter:
+        - tests
+        - lint
